@@ -10,7 +10,7 @@ const renderNunjucks = require('../lib/render-nunjucks')
 const WebSocket = require('ws')
 
 /**
- * Start dev server with auto-reload
+ * Start dev server with hot reload
  * @param {Object} options Function options
  * @param {Number} [options.port=3000] Server port
  * @param {String} options.templatePath Path of MJML template
@@ -61,7 +61,10 @@ async function dev (options) {
       return response.send(injectOutput)
     }
 
-    const testData = getTestData({ test: options.test })
+    const testData = getTestData({
+      test: options.test,
+      layout: options.layout
+    })
     const nunjucksOutput = renderNunjucks({
       template: injectOutput,
       context: testData
