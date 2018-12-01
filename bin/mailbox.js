@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 function generateTemplatePath (layout) {
-  return `src/layouts/${layout}.mjml`
+  return `${layout}/src/layouts/default.mjml`
 }
 
 function generateOutputPath (output, layout) {
@@ -63,7 +63,7 @@ const create = {
 
 const dev = {
   command: 'dev [layout]',
-  desc: 'Start dev server with auto-reload',
+  desc: 'Start dev server with hot reload',
   builder (yargs) {
     yargs
       .positional('layout', {
@@ -73,6 +73,7 @@ const dev = {
       })
       .options('test', {
         describe: 'Optional test data',
+        default: 'default',
         requiresArg: true,
         type: 'string'
       })
@@ -82,7 +83,11 @@ const dev = {
 
     const templatePath = generateTemplatePath(argv.layout)
 
-    require('../commands/dev')({ templatePath, test: argv.test })
+    require('../commands/dev')({
+      templatePath,
+      test: argv.test,
+      layout: argv.layout
+    })
   }
 }
 
@@ -122,6 +127,7 @@ const test = {
 
     require('../commands/test')({
       templatePath,
+      layout: argv.layout,
       test: argv.test,
       from: argv.from,
       to: argv.to
