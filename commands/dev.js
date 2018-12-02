@@ -4,9 +4,11 @@ const express = require('express')
 const generateWebSocketScript = require('../lib/generate-weboscket-script')
 const getPort = require('../lib/get-port')
 const getTestData = require('../lib/get-test-data')
+const getTemplates = require('../lib/get-templates')
 const injectScript = require('../lib/inject-script')
 const renderMJML = require('../lib/render-mjml')
 const renderNunjucks = require('../lib/render-nunjucks')
+const path = require('path')
 const WebSocket = require('ws')
 
 /**
@@ -17,75 +19,84 @@ const WebSocket = require('ws')
  * @param {String} [options.test] Optional test data
  */
 async function dev (options) {
-  if (!options.templatePath) {
-    throw new Error('options.templatePath is required')
-  }
 
-  if (typeof options.templatePath !== 'string') {
-    throw new TypeError('options.templatePath must be of type string')
-  }
+  const templates = getTemplates(options);
 
-  if (options.port && typeof options.port !== 'number') {
-    throw new TypeError('options.port must be of type number')
-  }
+  for (let i = 0; templates.length > i; i++) {
 
-  if (options.test && typeof options.test !== 'string') {
-    throw new TypeError('options.test must be of type string')
-  }
+    let localTemplatePath = path.join( path.dirname(options.templatePath), templates[i] );
+    let localOutputPath = path.join( path.dirname(options.templatePath), '../../dist/', path.basename(templates[i], '.mjml') + '.html' );
 
-  const serverPort = await getPort(options.port || 3000)
-  const socketPort = await getPort(serverPort + 1)
-
-  const server = express()
-  const socket = new WebSocket.Server({ port: socketPort })
-
-  const socketScript = generateWebSocketScript({ port: socketPort })
-
-  server.use(express.static('src/attachments'))
-
-  server.get('/', (request, response) => {
-    const mjmlOutput = renderMJML({ path: options.templatePath })
-
-    if (mjmlOutput.errors.length) {
-      consola.error(mjmlOutput.errors)
-      response.status(500).end()
-      return
+    if (!options.templatePath) {
+      throw new Error('options.templatePath is required')
     }
 
-    const injectOutput = injectScript({
-      html: mjmlOutput.html,
-      script: socketScript
-    })
-
-    if (!options.test) {
-      return response.send(injectOutput)
+    if (typeof options.templatePath !== 'string') {
+      throw new TypeError('options.templatePath must be of type string')
     }
 
-    const testData = getTestData({
-      test: options.test,
-      layout: options.layout
-    })
-    const nunjucksOutput = renderNunjucks({
-      template: injectOutput,
-      context: testData
-    })
+    if (options.port && typeof options.port !== 'number') {
+      throw new TypeError('options.port must be of type number')
+    }
 
-    response.send(nunjucksOutput)
-  })
+    if (options.test && typeof options.test !== 'string') {
+      throw new TypeError('options.test must be of type string')
+    }
 
-  server.listen(serverPort)
+    const serverPort = await getPort(options.port)
+    const socketPort = await getPort(serverPort + 1)
 
-  consola.info(`Server running at http://localhost:${serverPort}`)
+    const server = express()
+    const socket = new WebSocket.Server({ port: socketPort })
 
-  chokidar
-    .watch(['src/**/*.mjml', 'test/*.json'], { ignoreInitial: true })
-    .on('all', () => {
-      socket.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send('window-reload')
-        }
+    const socketScript = generateWebSocketScript({ port: socketPort })
+
+    server.use(express.static('src/attachments'))
+
+    server.get('/', (request, response) => {
+      const mjmlOutput = renderMJML({ path: localTemplatePath })
+
+      if (mjmlOutput.errors.length) {
+        consola.error(mjmlOutput.errors)
+        response.status(500).end()
+        return
+      }
+
+      const injectOutput = injectScript({
+        html: mjmlOutput.html,
+        script: socketScript
       })
+
+      if (!options.test) {
+        return response.send(injectOutput)
+      }
+
+      const testData = getTestData({
+        test: options.test,
+        layout: options.layout
+      })
+      const nunjucksOutput = renderNunjucks({
+        template: injectOutput,
+        context: testData
+      })
+
+      response.send(nunjucksOutput)
     })
+
+    server.listen(serverPort)
+
+    consola.info( templates[i] + ` running at http://localhost:${serverPort}`)
+
+    chokidar
+      .watch(['src/**/*.mjml', 'test/*.json'], { ignoreInitial: true })
+      .on('all', () => {
+        socket.clients.forEach(client => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send('window-reload')
+          }
+        })
+      })
+  }
 }
 
 module.exports = dev

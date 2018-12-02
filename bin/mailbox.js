@@ -52,7 +52,7 @@ const create = {
     yargs
       .positional('folder', {
         describe: 'Create project in this folder',
-        default: '.',
+        default: 'default',
         type: 'string'
       })
       .options('name', {
@@ -62,11 +62,18 @@ const create = {
         requiresArg: true,
         type: 'string'
       })
+      .options('template', {
+        alias: 't',
+        describe: 'Local template',
+        requiresArg: false,
+        type: 'string'
+      })
   },
   handler (argv) {
     require('../commands/create')({
       folder: argv.folder,
-      name: argv.name
+      name: argv.name,
+      template: argv.template
     })
   }
 }
@@ -87,6 +94,12 @@ const dev = {
         requiresArg: true,
         type: 'string'
       })
+      .options('port', {
+        describe: 'Port number',
+        default: '3000',
+        requiresArg: false,
+        type: 'number'
+      })
   },
   handler (argv) {
     process.env.NODE_ENV = 'development'
@@ -96,7 +109,8 @@ const dev = {
     require('../commands/dev')({
       templatePath,
       test: argv.test,
-      layout: argv.layout
+      layout: argv.layout,
+      port: argv.port
     })
   }
 }
