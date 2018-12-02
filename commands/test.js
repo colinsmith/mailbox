@@ -17,7 +17,10 @@ const sendMail = require('../lib/send-mail')
 function test (options) {
   consola.info('Rendering MJML…')
 
-  const testData = getTestData({ test: options.test })
+  const testData = getTestData({
+    test: options.test,
+    layout: options.layout
+  })
   const mjmlOutput = renderMJML({ path: options.templatePath })
 
   if (mjmlOutput.errors.length) {
@@ -42,15 +45,16 @@ function test (options) {
   })
 
   const mailAttachments = generateAttachments({
-    attachments: testData.attachments
+    attachments: testData.attachments,
+    layout: options.layout
   })
 
   consola.info('Sending email…')
 
   sendMail({
-    from: options.from,
-    to: options.to,
-    subject: testData.subject,
+    from: 'example@example.com', //options.from,
+    to: 'colin.smith92@gmail.com', //options.to,
+    subject: 'hello', //testData.subject,
     html: nunjucksOutput,
     attachments: mailAttachments
   }, (error, info) => {
