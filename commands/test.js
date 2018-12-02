@@ -52,9 +52,9 @@ function test (options) {
   consola.info('Sending email…')
 
   sendMail({
-    from: 'example@example.com', //options.from,
-    to: 'colin.smith92@gmail.com', //options.to,
-    subject: 'hello', //testData.subject,
+    from: options.from,
+    to: options.to,
+    subject: testData.subject,
     html: nunjucksOutput,
     attachments: mailAttachments
   }, (error, info) => {
