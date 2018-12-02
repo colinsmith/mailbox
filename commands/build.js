@@ -31,8 +31,6 @@ function build (options) {
     context: testData
   })
 
-  console.log(nunjucksOutput);
-
   consola.success('MJML rendered.')
 
   consola.info('Writing HTML file and copying attachments…')
