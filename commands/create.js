@@ -11,7 +11,7 @@ const path = require('path')
  * @param {String} options.name Project name
  */
 function create (options) {
-  const inputPath = path.join(__dirname, '../template')
+  const inputPath = path.join(__dirname, '../', 'template')
   const outputPath = path.join(process.cwd(), options.folder)
 
   consola.info('Copying template…')

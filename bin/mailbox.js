@@ -18,6 +18,12 @@ const build = {
         default: 'default',
         type: 'string'
       })
+      .options('test', {
+        describe: 'Optional test data',
+        default: 'default',
+        requiresArg: true,
+        type: 'string'
+      })
       .option('output', {
         alias: 'o',
         describe: 'Output path',
@@ -31,7 +37,11 @@ const build = {
     const templatePath = generateTemplatePath(argv.layout)
     const outputPath = generateOutputPath(argv.output, argv.layout)
 
-    require('../commands/build')({ templatePath, outputPath })
+    require('../commands/build')({
+      templatePath, outputPath,
+      test: argv.test,
+      layout: argv.layout
+    })
   }
 }
 
