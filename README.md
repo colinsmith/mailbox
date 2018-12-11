@@ -152,7 +152,7 @@ mailbox build --output <path>
 
 The layout defaults to `default` (the `src/layouts/default.mjml` file). The output path can be changed with `--output path/to/output.html`. The full filepath has to be specified.
 
-## To-do
+## Todo list
 
 - [x] Feature: Support multiple root template rendering
 - [x] Enhancement: Support optional port value
