@@ -1,6 +1,10 @@
-# Mail Box
+# Project is in a pre-alpha state and not intended for daily use.
 
-Small wrapper around MJML and Nodemailer for (awesome) HTML emails.
+Please refer to the [todo list](#todo-list) for a snapshot of development progress.
+
+## Mail Box
+
+Small wrapper around MJML and Nodemailer for painless, modern HTML emails.
 
 
 ## Installation
@@ -10,10 +14,10 @@ Small wrapper around MJML and Nodemailer for (awesome) HTML emails.
 
 ```bash
 # npm
-npm install -g @mvsde/mailbox
+npm install -g https://github.com/colinsmith/mailbox.git
 
 # Yarn
-yarn global add @mvsde/mailbox
+yarn global add https://github.com/colinsmith/mailbox.git
 ```
 
 
@@ -147,3 +151,16 @@ mailbox build --output <path>
 ```
 
 The layout defaults to `default` (the `src/layouts/default.mjml` file). The output path can be changed with `--output path/to/output.html`. The full filepath has to be specified.
+
+## To-do
+
+- [x] Feature: Support multiple root template rendering
+- [x] Enhancement: Support optional port value
+- [x] Feature: Add template support in `create` command
+- [x] Enhancement: Improve handling of serving multiple root templates
+- [ ] Feature: Add Nunjuck support in MJML attributes
+- [ ] Feature: Add global config files (environment settings, defaults)
+- [ ] Feature: Clean up path handling (abstract into it's own class)
+- [ ] Improve documentation
+- [ ] Feature: Start base theme repo (project-level)
+- [ ] Add unit tests
