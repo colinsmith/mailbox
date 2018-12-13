@@ -1,4 +1,3 @@
-const chalk = require('chalk')
 const consola = require('consola')
 const fs = require('fs-extra')
 const generateGitignore = require('../lib/generate-gitignore')
@@ -54,8 +53,6 @@ function create (options) {
   }
 
   consola.success('.gitignore and package.json generated.')
-
-  console.log(chalk`\nPlease run {blue npm install} or {blue yarn install} within the project folder to download dependencies.\n`)
 }
 
 module.exports = create
