@@ -8,6 +8,7 @@ const getTemplates = require('../lib/get-templates')
 const injectScript = require('../lib/inject-script')
 const renderMJML = require('../lib/render-mjml')
 const renderNunjucks = require('../lib/render-nunjucks')
+const renderEmail = require('../lib/render-email')
 const path = require('path')
 const WebSocket = require('ws')
 
@@ -54,33 +55,14 @@ async function dev (options) {
     server.use(express.static('src/attachments'))
 
     server.get('/', (request, response) => {
-      const mjmlOutput = renderMJML({ path: localTemplatePath })
 
-      if (mjmlOutput.errors.length) {
-        consola.error(mjmlOutput.errors)
-        response.status(500).end()
-        return
-      }
+      const renderedHTML = renderEmail({
+        layout: options.layout,
+        templatePath: localTemplatePath,
+        templateData: options.test
+      });
 
-      const injectOutput = injectScript({
-        html: mjmlOutput.html,
-        script: socketScript
-      })
-
-      if (!options.test) {
-        return response.send(injectOutput)
-      }
-
-      const testData = getTestData({
-        test: options.test,
-        layout: options.layout
-      })
-      const nunjucksOutput = renderNunjucks({
-        template: injectOutput,
-        context: testData
-      })
-
-      response.send(nunjucksOutput)
+      response.send(renderedHTML)
     })
 
     server.listen(serverPort)

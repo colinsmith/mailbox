@@ -15,14 +15,11 @@ function create (options) {
   let inputPath, outputPath = '';
 
   if (!options.template) {
-    
-    console.log('2');
     // use default project
     inputPath = path.join(__dirname, '../', 'template')
     outputPath = path.join(process.cwd(), options.folder)
 
   } else {
-    console.log('1');
     // local template is specified
     inputPath = path.join(process.cwd(), '/templates/', options.template)
     outputPath = path.join(process.cwd(), options.folder)

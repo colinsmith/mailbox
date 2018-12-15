@@ -1,10 +1,8 @@
 const consola = require('consola')
 const fs = require('fs-extra')
 const path = require('path')
-const getTestData = require('../lib/get-test-data')
 const getTemplates = require('../lib/get-templates')
-const renderMJML = require('../lib/render-mjml')
-const renderNunjucks = require('../lib/render-nunjucks')
+const renderEmail = require('../lib/render-email')
 
 /**
  * Build and write mail template
@@ -22,23 +20,12 @@ function build (options) {
 
     let localTemplatePath = path.join( path.dirname(options.templatePath), templates[i] );
     let localOutputPath = path.join( path.dirname(options.templatePath), '../../dist/', path.basename(templates[i], '.mjml') + '.html' );
-
-    const mjmlOutput = renderMJML({ path: localTemplatePath })
-
-    if (mjmlOutput.errors.length) {
-      consola.error(mjmlOutput.errors)
-      process.exit(1)
-    }
-
-    const testData = getTestData({
-      test: options.test,
-      layout: options.layout
-    })
     
-    const nunjucksOutput = renderNunjucks({
-      template: mjmlOutput.html,
-      context: testData
-    })
+    const renderedHTML = renderEmail({
+      layout: options.layout,
+      templatePath: localTemplatePath,
+      templateData: options.test
+    });
 
     consola.success('MJML rendered.')
 
@@ -46,7 +33,7 @@ function build (options) {
 
     try {
       fs.ensureFileSync(localOutputPath)
-      fs.writeFileSync(localOutputPath, nunjucksOutput)
+      fs.writeFileSync(localOutputPath, renderedHTML)
       fs.copySync(path.join(process.cwd(), `${options.layout}/src/attachments`), path.dirname(localOutputPath))
     } catch (error) {
       consola.error(error.message)
