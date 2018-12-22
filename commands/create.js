@@ -1,5 +1,6 @@
 const consola = require('consola')
 const fs = require('fs-extra')
+const getTemplatePath = require('../lib/get-template-path')
 const generateGitignore = require('../lib/generate-gitignore')
 const generatePackageJSON = require('../lib/generate-package-json')
 const path = require('path')
@@ -12,44 +13,74 @@ const path = require('path')
  */
 function create (options) {
 
-  let inputPath, outputPath = '';
-
-  if (!options.template) {
-    // use default project
-    inputPath = path.join(__dirname, '../', 'template')
-    outputPath = path.join(process.cwd(), options.folder)
-
-  } else {
-    // local template is specified
-    inputPath = path.join(process.cwd(), '/templates/', options.template)
-    outputPath = path.join(process.cwd(), options.folder)
+  if (!options.folder) {
+    // Throw error if folder location parameter is missing
+    throw new Error('Folder is required')
   }
 
   consola.info('Copying template…')
 
-  try {
-    fs.copySync(inputPath, outputPath)
-  } catch (error) {
-    consola.error(error.message)
-    process.exit(1)
-  }
-
-  consola.success('Template copied.')
-
-  consola.info('Generating .gitignore and package.json…')
-
   const gitignore = generateGitignore()
   const packageJSON = generatePackageJSON({ name: options.name })
 
-  try {
-    fs.writeFileSync(path.join(outputPath, '.gitignore'), gitignore)
-    fs.writeFileSync(path.join(outputPath, 'package.json'), packageJSON)
-  } catch (error) {
-    consola.error(error.message)
-    process.exit(1)
-  }
+  if (options.template) {
 
-  consola.success('.gitignore and package.json generated.')
+    try {
+      // Copy template content
+      fs.copySync(getTemplatePath({
+        location: 'local',
+        subfolder: path.join('templates/', options.template)
+      }), getTemplatePath({
+        location: 'local',
+        subfolder: options.folder
+      }))
+
+      // Copy .gitignore
+      fs.writeFileSync(getTemplatePath({
+        location: 'local',
+        subfolder: options.folder,
+        file: '.gitignore'
+      }), gitignore)
+
+      // Copy package.json
+      fs.writeFileSync(getTemplatePath({
+        location: 'local',
+        subfolder: options.folder,
+        file: 'package.json'
+      }), packageJSON)
+
+    } catch (error) {
+      consola.error(error.message)
+      process.exit(1)
+    }
+
+    consola.success(`New project created from template! [${options.template}]`)
+
+  } else {
+    fs.copySync(getTemplatePath({
+      location: 'global',
+      subfolder: 'template/default/'
+    }), getTemplatePath({
+      location: 'local',
+      subfolder: options.folder
+    }))
+
+    // Copy .gitignore
+    fs.writeFileSync(getTemplatePath({
+      location: 'local',
+      subfolder: options.folder,
+      file: '.gitignore'
+    }), gitignore)
+
+    // Copy package.json
+    fs.writeFileSync(getTemplatePath({
+      location: 'local',
+      subfolder: options.folder,
+      file: 'package.json'
+    }), packageJSON)
+
+    consola.success('New project created!')
+  }
 }
 
 module.exports = create

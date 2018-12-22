@@ -20,36 +20,36 @@ const WebSocket = require('ws')
  */
 async function dev (options) {
 
-  // Use port flag if provided, otherwise default to port 3000
-  const port = (options.port !== 'undefined') ? 3000 : Number(options.port);
-
-  // Set up WebSocket and express dev server
-  const serverPort = await getPort(port)
-  const socketPort = await getPort(serverPort + 1)
-
-  const server = express()
-  const socket = new WebSocket.Server({ port: socketPort })
-
-  const socketScript = generateWebSocketScript({ port: socketPort })
-
   // Fetch list of all .mjml files in specified directory
   const templates = getTemplates({
       path: getTemplatePath({
         layout: options.layout,
         location: 'local',
         subfolder: 'layouts',
-        returnDir: 'input'
+        returnDir: 'src'
       })
   });
 
   for (let i = 0; templates.length > i; i++) {
+
+    // Use port flag if provided, otherwise default to port 3000
+    const port = (options.port !== 'undefined') ? 3000 : Number(options.port);
+
+    // Set up WebSocket and express dev server
+    const serverPort = await getPort(port)
+    const socketPort = await getPort(serverPort + 1)
+
+    const server = express()
+    const socket = new WebSocket.Server({ port: socketPort })
+
+    const socketScript = generateWebSocketScript({ port: socketPort })
 
     server.use(express.static(
       getTemplatePath({
         layout: options.layout,
         location: 'local',
         subfolder: 'attachments',
-        returnDir: 'input'
+        returnDir: 'src'
       })
     ))
 
@@ -60,14 +60,14 @@ async function dev (options) {
           layout: options.layout,
           location: 'local',
           subfolder: 'layouts',
-          returnDir: 'input',
+          returnDir: 'src',
           file: templates[i]
         }),
         templateData: getTemplatePath({
           layout: options.layout,
           location: 'local',
           subfolder: 'data',
-          returnDir: 'input',
+          returnDir: 'src',
           file: options.test + '.json'
         })
       });
@@ -85,13 +85,13 @@ async function dev (options) {
           layout: options.layout,
           location: 'local',
           subfolder: 'layouts',
-          returnDir: 'input',
+          returnDir: 'src',
           file: '/**/*.mjml'
         }), getTemplatePath({
           layout: options.layout,
           location: 'local',
           subfolder: 'data',
-          returnDir: 'input',
+          returnDir: 'src',
           file: '/**/*.json'})
       ], { ignoreInitial: true })
       .on('all', () => {

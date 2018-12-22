@@ -19,11 +19,11 @@ function build (options) {
       path: getTemplatePath({
         layout: options.layout,
         location: 'local',
-        subfolder: 'layouts',
-        returnDir: 'input'
+        returnDir: 'src',
+        subfolder: 'layouts'
       })
   });
-
+  
   // Iterate over each .mjml file
   for (let i = 0; templates.length > i; i++) {
     consola.info('Rendering: ' + templates[i]);
@@ -32,7 +32,7 @@ function build (options) {
       layout: options.layout,
       location: 'local',
       subfolder: 'test',
-      returnDir: 'input'
+      returnDir: 'src'
     });
 
     // Render MJML to HTML
@@ -42,14 +42,14 @@ function build (options) {
         layout: options.layout,
         location: 'local',
         subfolder: 'layouts',
-        returnDir: 'input',
+        returnDir: 'src',
         file: templates[i]
       }),
       templateData: getTemplatePath({
         layout: options.layout,
         location: 'local',
         subfolder: 'data',
-        returnDir: 'input',
+        returnDir: 'src',
         file: options.test + '.json'
       })
     });
@@ -65,14 +65,14 @@ function build (options) {
         layout: options.layout,
         location: 'local',
         subfolder: 'layouts',
-        returnDir: 'output'
+        returnDir: 'dist'
       }))
 
       // Write rendered MJML to destination
       fs.writeFileSync(getTemplatePath({
         layout: options.layout,
         location: 'local',
-        returnDir: 'output',
+        returnDir: 'dist',
         file: path.join(path.basename(templates[i], '.mjml') + '.html' )
       }), renderedHTML)
 
@@ -81,12 +81,12 @@ function build (options) {
         layout: options.layout,
         location: 'local',
         subfolder: 'attachments',
-        returnDir: 'input'
+        returnDir: 'src'
       }), getTemplatePath({
         layout: options.layout,
         location: 'local',
         subfolder: 'attachments',
-        returnDir: 'output'
+        returnDir: 'dist'
       }))
 
     } catch (error) {
