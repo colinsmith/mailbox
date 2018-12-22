@@ -1,7 +1,7 @@
 const consola = require('consola')
 const formatMailSuccess = require('../lib/format-mail-success')
 const generateAttachments = require('../lib/generate-attachments')
-const getTestData = require('../lib/get-test-data')
+const getTemplateData = require('../lib/get-template-data')
 const renderMJML = require('../lib/render-mjml')
 const renderNunjucks = require('../lib/render-nunjucks')
 const sendMail = require('../lib/send-mail')
@@ -17,7 +17,7 @@ const sendMail = require('../lib/send-mail')
 function test (options) {
   consola.info('Rendering MJML…')
 
-  const testData = getTestData({
+  const testData = getTemplateData({
     test: options.test,
     layout: options.layout
   })
