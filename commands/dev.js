@@ -5,9 +5,8 @@ const generateWebSocketScript = require('../lib/generate-weboscket-script')
 const getPort = require('../lib/get-port')
 const getTestData = require('../lib/get-test-data')
 const getTemplates = require('../lib/get-templates')
+const getTemplatePath = require('../lib/get-template-path')
 const injectScript = require('../lib/inject-script')
-const renderMJML = require('../lib/render-mjml')
-const renderNunjucks = require('../lib/render-nunjucks')
 const renderEmail = require('../lib/render-email')
 const path = require('path')
 const WebSocket = require('ws')
@@ -21,45 +20,56 @@ const WebSocket = require('ws')
  */
 async function dev (options) {
 
-  const templates = getTemplates(options);
+  // Use port flag if provided, otherwise default to port 3000
+  const port = (options.port !== 'undefined') ? 3000 : Number(options.port);
+
+  // Set up WebSocket and express dev server
+  const serverPort = await getPort(port)
+  const socketPort = await getPort(serverPort + 1)
+
+  const server = express()
+  const socket = new WebSocket.Server({ port: socketPort })
+
+  const socketScript = generateWebSocketScript({ port: socketPort })
+
+  // Fetch list of all .mjml files in specified directory
+  const templates = getTemplates({
+      path: getTemplatePath({
+        layout: options.layout,
+        location: 'local',
+        subfolder: 'layouts',
+        returnDir: 'input'
+      })
+  });
 
   for (let i = 0; templates.length > i; i++) {
 
-    let localTemplatePath = path.join( path.dirname(options.templatePath), templates[i] );
-    let localOutputPath = path.join( path.dirname(options.templatePath), '../../dist/', path.basename(templates[i], '.mjml') + '.html' );
-
-    if (!options.templatePath) {
-      throw new Error('options.templatePath is required')
-    }
-
-    if (typeof options.templatePath !== 'string') {
-      throw new TypeError('options.templatePath must be of type string')
-    }
-
-    if (options.port && typeof options.port !== 'number') {
-      throw new TypeError('options.port must be of type number')
-    }
-
-    if (options.test && typeof options.test !== 'string') {
-      throw new TypeError('options.test must be of type string')
-    }
-
-    const serverPort = await getPort(options.port)
-    const socketPort = await getPort(serverPort + 1)
-
-    const server = express()
-    const socket = new WebSocket.Server({ port: socketPort })
-
-    const socketScript = generateWebSocketScript({ port: socketPort })
-
-    server.use(express.static('src/attachments'))
+    server.use(express.static(
+      getTemplatePath({
+        layout: options.layout,
+        location: 'local',
+        subfolder: 'attachments',
+        returnDir: 'input'
+      })
+    ))
 
     server.get('/', (request, response) => {
-
       const renderedHTML = renderEmail({
         layout: options.layout,
-        templatePath: localTemplatePath,
-        templateData: options.test
+        templatePath: getTemplatePath({
+          layout: options.layout,
+          location: 'local',
+          subfolder: 'layouts',
+          returnDir: 'input',
+          file: templates[i]
+        }),
+        templateData: getTemplatePath({
+          layout: options.layout,
+          location: 'local',
+          subfolder: 'data',
+          returnDir: 'input',
+          file: options.test + '.json'
+        })
       });
 
       response.send(renderedHTML)
@@ -70,7 +80,20 @@ async function dev (options) {
     consola.info( templates[i] + ` running at http://localhost:${serverPort}`)
 
     chokidar
-      .watch(['src/**/*.mjml', 'test/*.json'], { ignoreInitial: true })
+      .watch([
+        getTemplatePath({
+          layout: options.layout,
+          location: 'local',
+          subfolder: 'layouts',
+          returnDir: 'input',
+          file: '/**/*.mjml'
+        }), getTemplatePath({
+          layout: options.layout,
+          location: 'local',
+          subfolder: 'data',
+          returnDir: 'input',
+          file: '/**/*.json'})
+      ], { ignoreInitial: true })
       .on('all', () => {
         socket.clients.forEach(client => {
           if (client.readyState === WebSocket.OPEN) {
