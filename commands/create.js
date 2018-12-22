@@ -54,7 +54,7 @@ function create (options) {
       process.exit(1)
     }
 
-    consola.success(`New project created from template! [${options.template}]`)
+    consola.success(`New project created from template [template: ${options.template}]`)
 
   } else {
     fs.copySync(getTemplatePath({
@@ -79,7 +79,7 @@ function create (options) {
       file: 'package.json'
     }), packageJSON)
 
-    consola.success('New project created!')
+    consola.success('New project created')
   }
 }
 
