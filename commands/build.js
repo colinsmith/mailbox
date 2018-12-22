@@ -14,6 +14,9 @@ const renderEmail = require('../lib/render-email')
 function build (options) {
   consola.info('Rendering MJML…')
 
+  // Track rendered templates
+  let renderedTemplates = Array();
+
   // Fetch list of all .mjml files in specified directory
   const templates = getTemplates({
       path: getTemplatePath({
@@ -23,10 +26,11 @@ function build (options) {
         subfolder: 'layouts'
       })
   });
-  
+
   // Iterate over each .mjml file
   for (let i = 0; templates.length > i; i++) {
-    consola.info('Rendering: ' + templates[i]);
+    
+    renderedTemplates.push(templates[i]);
 
     const dataDirectory = getTemplatePath({
       layout: options.layout,
@@ -53,10 +57,6 @@ function build (options) {
         file: options.test + '.json'
       })
     });
-
-    consola.success('MJML rendered.')
-
-    consola.info('Writing HTML file and copying attachments…')
 
     // Write compiled MJML to file
     try {
@@ -94,9 +94,10 @@ function build (options) {
       consola.error(error.message)
       process.exit(1)
     }
-
-    consola.success('HTML written and attachments copied.')
   }
+
+  consola.success(`Build successful! [${renderedTemplates.join(', ')}]`)
+
 }
 
 module.exports = build

@@ -30,6 +30,8 @@ async function dev (options) {
       })
   });
 
+  consola.info(`Starting MJML development server...`)
+
   for (let i = 0; templates.length > i; i++) {
 
     // Use port flag if provided, otherwise default to port 3000
@@ -77,7 +79,7 @@ async function dev (options) {
 
     server.listen(serverPort)
 
-    consola.info( templates[i] + ` running at http://localhost:${serverPort}`)
+    consola.info(`http://localhost:${serverPort} [${templates[i]}]`)
 
     chokidar
       .watch([
