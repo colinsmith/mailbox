@@ -2,6 +2,7 @@ const consola = require('consola')
 const fs = require('fs-extra')
 const path = require('path')
 const getTemplates = require('../lib/get-templates')
+const getTemplatePath = require('../lib/get-template-path')
 const renderEmail = require('../lib/render-email')
 
 /**
@@ -12,30 +13,84 @@ const renderEmail = require('../lib/render-email')
  */
 function build (options) {
   consola.info('Rendering MJML…')
-  
-  const templates = getTemplates(options);
 
+  // Fetch list of all .mjml files in specified directory
+  const templates = getTemplates({
+      path: getTemplatePath({
+        layout: options.layout,
+        location: 'local',
+        subfolder: 'layouts',
+        returnDir: 'input'
+      })
+  });
+
+  // Iterate over each .mjml file
   for (let i = 0; templates.length > i; i++) {
     consola.info('Rendering: ' + templates[i]);
 
-    let localTemplatePath = path.join( path.dirname(options.templatePath), templates[i] );
-    let localOutputPath = path.join( path.dirname(options.templatePath), '../../dist/', path.basename(templates[i], '.mjml') + '.html' );
-    
+    const dataDirectory = getTemplatePath({
+      layout: options.layout,
+      location: 'local',
+      subfolder: 'test',
+      returnDir: 'input'
+    });
+
+    // Render MJML to HTML
     const renderedHTML = renderEmail({
       layout: options.layout,
-      templatePath: localTemplatePath,
-      templateData: options.test
+      templatePath: getTemplatePath({
+        layout: options.layout,
+        location: 'local',
+        subfolder: 'layouts',
+        returnDir: 'input',
+        file: templates[i]
+      }),
+      templateData: getTemplatePath({
+        layout: options.layout,
+        location: 'local',
+        subfolder: 'data',
+        returnDir: 'input',
+        file: options.test + '.json'
+      })
     });
 
     consola.success('MJML rendered.')
 
     consola.info('Writing HTML file and copying attachments…')
 
+    // Write compiled MJML to file
     try {
-      fs.ensureFileSync(localOutputPath)
-      fs.writeFileSync(localOutputPath, renderedHTML)
-      fs.copySync(path.join(process.cwd(), `${options.layout}/src/attachments`), path.dirname(localOutputPath))
+      // Verify directory
+      fs.ensureFileSync(getTemplatePath({
+        layout: options.layout,
+        location: 'local',
+        subfolder: 'layouts',
+        returnDir: 'output'
+      }))
+
+      // Write rendered MJML to destination
+      fs.writeFileSync(getTemplatePath({
+        layout: options.layout,
+        location: 'local',
+        returnDir: 'output',
+        file: path.join(path.basename(templates[i], '.mjml') + '.html' )
+      }), renderedHTML)
+
+      // Copy assets 1:1 to destination
+      fs.copySync(getTemplatePath({
+        layout: options.layout,
+        location: 'local',
+        subfolder: 'attachments',
+        returnDir: 'input'
+      }), getTemplatePath({
+        layout: options.layout,
+        location: 'local',
+        subfolder: 'attachments',
+        returnDir: 'output'
+      }))
+
     } catch (error) {
+      // If fail, show error
       consola.error(error.message)
       process.exit(1)
     }

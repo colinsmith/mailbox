@@ -1,13 +1,5 @@
 #!/usr/bin/env node
 
-function generateTemplatePath (layout) {
-  return `${layout}/src/layouts/default.mjml`
-}
-
-function generateOutputPath (output, layout) {
-  return output || `dist/${layout}.html`
-}
-
 const build = {
   command: 'build [layout]',
   desc: 'Render MJML template',
@@ -34,11 +26,8 @@ const build = {
   handler (argv) {
     process.env.NODE_ENV = 'production'
 
-    const templatePath = generateTemplatePath(argv.layout)
-    const outputPath = generateOutputPath(argv.output, argv.layout)
-
-    require('../commands/build')({
-      templatePath, outputPath,
+    require('../commands/build') ({
+      outputOverride: argv.output,
       test: argv.test,
       layout: argv.layout
     })
@@ -70,7 +59,7 @@ const create = {
       })
   },
   handler (argv) {
-    require('../commands/create')({
+    require('../commands/create') ({
       folder: argv.folder,
       name: argv.name,
       template: argv.template
@@ -104,12 +93,9 @@ const dev = {
   handler (argv) {
     process.env.NODE_ENV = 'development'
 
-    const templatePath = generateTemplatePath(argv.layout)
-
-    require('../commands/dev')({
-      templatePath,
-      test: argv.test,
+    require('../commands/dev') ({
       layout: argv.layout,
+      test: argv.test,
       port: argv.port
     })
   }
@@ -147,10 +133,7 @@ const test = {
   handler (argv) {
     process.env.NODE_ENV = 'development'
 
-    const templatePath = generateTemplatePath(argv.layout)
-
-    require('../commands/test')({
-      templatePath,
+    require('../commands/test') ({
       layout: argv.layout,
       test: argv.test,
       from: argv.from,
