@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const build = {
-  command: 'build [layout]',
+  command: 'build [project]',
   desc: 'Render MJML template',
   builder (yargs) {
     yargs
@@ -35,7 +35,7 @@ const build = {
 }
 
 const create = {
-  command: 'create [folder]',
+  command: 'create [project]',
   desc: 'Initialize a new project',
   builder (yargs) {
     yargs
@@ -68,7 +68,7 @@ const create = {
 }
 
 const dev = {
-  command: 'dev [layout]',
+  command: 'dev [project]',
   desc: 'Start dev server with auto-reload',
   builder (yargs) {
     yargs
@@ -146,7 +146,7 @@ require('yargs')
   .command(create)
   .command(dev)
   .command(build)
-  .command(test)
+  // .command(test)
   .strict(true)
   .demandCommand()
   .recommendCommands()
