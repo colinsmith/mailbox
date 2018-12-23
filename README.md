@@ -96,6 +96,7 @@ Ideally, a working directory should look something like this:
 - [x] Improve documentation
 
 - [ ] Re-integrate Nodemailer support
+- [ ] Fix websocket live reloading in dev mode
 - [ ] Feature: Add global config files (environment settings, defaults)
 - [ ] Feature: Start base theme repo (project-level)
 - [ ] Add unit tests
