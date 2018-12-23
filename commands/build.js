@@ -64,8 +64,8 @@ function build (options) {
       fs.ensureFileSync(getTemplatePath({
         layout: options.layout,
         location: 'local',
-        subfolder: 'layouts',
-        returnDir: 'dist'
+        returnDir: 'dist',
+        file: path.join(path.basename(templates[i], '.mjml') + '.html' )
       }))
 
       // Write rendered MJML to destination

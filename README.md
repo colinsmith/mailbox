@@ -1,15 +1,13 @@
-# Project is in a pre-alpha state and not intended for daily use.
+# Mailbox
 
-Please refer to the [todo list](#todo-list) for a snapshot of development progress.
+A modern approach to email development, testing and deployment. Built for speed, open to everyone!
 
-## Mail Box
-
-Small wrapper around MJML and Nodemailer for painless, modern HTML emails.
+This project is still a work in progress and builds on the amazing work of [Fynn Becker](https://github.com/mvsde/mailbox). Please refer to the [todo list](#todo-list) for a snapshot of development progress.
 
 
 ## Installation
 
-1. Install [Node.js](https://nodejs.org)
+1. Install [Node.js v10+](https://nodejs.org)
 2. Install Mail Box CLI:
 
 ```bash
@@ -20,137 +18,72 @@ npm install -g https://github.com/colinsmith/mailbox.git
 yarn global add https://github.com/colinsmith/mailbox.git
 ```
 
+## Commands
 
-## New Project
+The CLI supports three CLI commands: `mailbox create`, `mailbox dev` and `mailbox build`
 
-```bash
-mailbox create
+### Create
 
-# Optional sub-folder
-mailbox create [folder]
-cd folder
+Create and enter a new or directory for your campaigns with:
 
-# Optional name
-mailbox create --name <project-name>
-```
+`mkdir <campaigns> && cd <campaigns>`
 
-The folder defaults to the current directory (`.`) and the name to `mailbox-project`.
+Create a new project with:
 
-If you created your project with the optional `folder` argument, don't forget to change to the new folder with `cd folder` before you continue.
+`mailbox create <project name>`
 
+Optionally, you can have a `templates` folder in your working directory, which will allow you to build a new project from a template. To do this use the `--template` flag:
 
-## Configuration
+`mailbox create <project name> --template <my template>`
 
-Create the optional file `mjml.config.js` in the project root to customize MJML settings.
+### Develop
 
-```js
-module.exports = {
-  fonts: { /* … */ },
-  keepComments: true,
-  beautify: false,
-  minify: false,
-  validationLevel: 'soft'
-}
-```
+A small local development server (using express.js) can be started with:
 
-The MJML documentation provides a short [description for all available options](https://mjml.io/documentation/#inside-node-js).
+`mailbox dev <project name>`
 
+By default, port 3000 is used. If you want to specify a new port, you can use the `--port` flag:
 
-## Project Setup
+`mailbox dev --port <my port>`
 
-### Layouts
+### Build
 
-The file `src/layouts/default.mjml` serves as a base layout for an HTML email. It uses [MJML (Mailjet Markup Language)](https://mjml.io/documentation/) for simpler email markup.
+Building templates can be done with the `build` command:
 
-### Includes
-
-The `src/includes`-folder is optional, it can be renamed or removed altogether. The idea behind this folder is to have one location for reusable chunks of markup. With [`<mj-include>`](https://mjml.io/documentation/#mj-include) MJML files can be included in layouts or other includes.
-
-### Attachments
-
-Files in the folder `src/attachments` can be referenced in a data specification. Nodemailer attaches these to the mail and provides a `cid` so images can be loaded from the attachments. The contents of the attachment folder will be copied as-is to the output during build time.
-
-### Data
-
-The `data` folder has to contain at least a `default.json` file which serves as the base data specification. You can create more JSON data files, but they always need a `default.json` to extend.
-
-The data file content is passed to Nunjucks as a context. This allows the use of [Nunjucks templating features](https://mozilla.github.io/nunjucks/templating.html) to enhance the development and testing phase.
-
-The special `attachments`-key in a data file will be transformed to allow static file linking during development and `cid`-attachment linking in test emails.
-
-```json
-{
-  "attachments": {
-    "name": "filename.ext"
-  }
-}
-```
-
-The attachment is available as `{{ attachments.name }}` within the email template. The value is the filename of the attachment relative to the `src/attachments` directory.
+`mailbox build <project name>`
 
 
-## Development
+## Project Structure
 
-You can start a development server with auto-reload using the following command:
+Ideally, a working directory should look something like this:
 
-```bash
-mailbox dev
++-- campaigns
+|   +-- templates
+|       +-- my-template     
+|           +-- src
+|               +-- attachments
+|                   +-- img.jpg
+|               +-- data
+|                   +-- data.json
+|               +-- includes
+|                   +-- partial.mjml
+|               +-- layouts
+|                   +-- index.mjml
+|   +-- my-email
+|       +-- src
+|           +-- attachments
+|               +-- img.jpg
+|           +-- data
+|               +-- data.json
+|           +-- includes
+|               +-- partial.mjml
+|           +-- layouts
+|               +-- index.mjml
+|       +-- dist
+|           +-- attachments
+|               +-- img.jpg
+|           +-- index.html
 
-# Optional alternative layout
-mailbox dev [layout]
-
-# Optional email data
-mailbox dev --data <data-spec,...>
-```
-
-The layout defaults to `default` (the `src/layouts/default.mjml` file). The Nunjucks context isn't populated with data by default.
-
-You can specifiy one or more data files with `--data file1,file2,...`. The list will always be prepended with the default data file. The files will be merged from right into left.
-
-**NOTE:** You don't need to specify the full path for data files. The file name without extension is sufficient.
-
-
-## Test
-
-To send a test email use the following command:
-
-```bash
-mailbox test --to <email-address>
-
-# Optional alternative layout
-mailbox test [layout] --to <email-address>
-
-# Optional sender address
-mailbox test --to <email-address> --from <email-address>
-
-# Optional alternative email data
-mailbox test --to <email-address> --data <data-spec,...>
-```
-
-Both layout and data default to `default` (the `src/layouts/default.mjml` and `data/default.json` files). A recipient email address has to be specified with `--to info@example.com`, the sender email is optional and defaults to `test@example.com`.
-
-Email data other than default can be specified with `--data file1,file2,...`. The list will always be prepended with the default data file. The files will be merged from right into left.
-
-**NOTE:** You don't need to specify the full path for data files. The file name without extension is sufficient.
-
-**NOTE:** For now, `sendmail` is required for the tests to work. In the future the Nodemailer transporter will be configurable. This will enable sending via SMTP.
-
-
-## Build
-
-To generate production ready files use this command:
-
-```bash
-mailbox build
-
-# Optional alternative layout
-mailbox build [layout]
-
-# Optional alternative output location
-mailbox build --output <path>
-```
-
-The layout defaults to `default` (the `src/layouts/default.mjml` file). The output path can be changed with `--output path/to/output.html`. The full filepath has to be specified.
 
 ## Todo list
 
@@ -158,9 +91,11 @@ The layout defaults to `default` (the `src/layouts/default.mjml` file). The outp
 - [x] Enhancement: Support optional port value
 - [x] Feature: Add template support in `create` command
 - [x] Enhancement: Improve handling of serving multiple root templates
-- [ ] Feature: Add Nunjuck support in MJML attributes
+- [x] Feature: Add Nunjuck support in MJML attributes
+- [x] Feature: Clean up path handling (abstract into it's own class)
+- [x] Improve documentation
+
+- [ ] Re-integrate Nodemailer support
 - [ ] Feature: Add global config files (environment settings, defaults)
-- [ ] Feature: Clean up path handling (abstract into it's own class)
-- [ ] Improve documentation
 - [ ] Feature: Start base theme repo (project-level)
 - [ ] Add unit tests

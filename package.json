@@ -1,7 +1,7 @@
 {
-  "name": "@mvsde/mailbox",
+  "name": "mailbox",
   "version": "0.3.0",
-  "description": "Small wrapper around MJML and Nodemailer for (awesome) HTML emails",
+  "description": "MJML email workflow CLI tool",
   "scripts": {
     "lint": "eslint .",
     "test:create": "node bin/mailbox create test/create",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mvsde/mailbox"
+    "url": "https://github.com/colinsmith/mailbox"
   },
   "keywords": [
     "email",
@@ -21,10 +21,10 @@
     "nodemailer",
     "nunjucks"
   ],
-  "author": "Fynn Becker <info@fynn-becker.de>",
+  "author": "Colin Smith <colin@colinsmithdesign.ca>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mvsde/mailbox/issues"
+    "url": "https://github.com/colinsmith/mailbox/issues"
   },
   "homepage": "https://github.com/mvsde/mailbox#readme",
   "bin": "bin/mailbox.js",
