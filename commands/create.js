@@ -35,20 +35,6 @@ function create (options) {
         subfolder: options.folder
       }))
 
-      // Copy .gitignore
-      fs.writeFileSync(getTemplatePath({
-        location: 'local',
-        subfolder: options.folder,
-        file: '.gitignore'
-      }), gitignore)
-
-      // Copy package.json
-      fs.writeFileSync(getTemplatePath({
-        location: 'local',
-        subfolder: options.folder,
-        file: 'package.json'
-      }), packageJSON)
-
     } catch (error) {
       consola.error(error.message)
       process.exit(1)
@@ -57,27 +43,21 @@ function create (options) {
     consola.success(`New project created from template [template: ${options.template}]`)
 
   } else {
-    fs.copySync(getTemplatePath({
-      location: 'global',
-      subfolder: 'template/default/'
-    }), getTemplatePath({
-      location: 'local',
-      subfolder: options.folder
-    }))
 
-    // Copy .gitignore
-    fs.writeFileSync(getTemplatePath({
-      location: 'local',
-      subfolder: options.folder,
-      file: '.gitignore'
-    }), gitignore)
+    try {
+      // Copy template content
+      fs.copySync(getTemplatePath({
+        location: 'global',
+        subfolder: 'template/default/'
+      }), getTemplatePath({
+        location: 'local',
+        subfolder: options.folder
+      }))
 
-    // Copy package.json
-    fs.writeFileSync(getTemplatePath({
-      location: 'local',
-      subfolder: options.folder,
-      file: 'package.json'
-    }), packageJSON)
+    } catch (error) {
+      consola.error(error.message)
+      process.exit(1)
+    }
 
     consola.success('New project created')
   }

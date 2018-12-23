@@ -5,7 +5,7 @@ const build = {
   desc: 'Render MJML template',
   builder (yargs) {
     yargs
-      .positional('layout', {
+      .positional('project', {
         describe: 'Email layout',
         default: 'default',
         type: 'string'
@@ -29,7 +29,7 @@ const build = {
     require('../commands/build') ({
       outputOverride: argv.output,
       test: argv.test,
-      layout: argv.layout
+      layout: argv.project
     })
   }
 }
@@ -39,7 +39,7 @@ const create = {
   desc: 'Initialize a new project',
   builder (yargs) {
     yargs
-      .positional('folder', {
+      .positional('project', {
         describe: 'Create project in this folder',
         default: 'default',
         type: 'string'
@@ -60,7 +60,7 @@ const create = {
   },
   handler (argv) {
     require('../commands/create') ({
-      folder: argv.folder,
+      folder: argv.project,
       name: argv.name,
       template: argv.template
     })
@@ -72,7 +72,7 @@ const dev = {
   desc: 'Start dev server with auto-reload',
   builder (yargs) {
     yargs
-      .positional('layout', {
+      .positional('project', {
         describe: 'Email layout',
         default: 'default',
         type: 'string'
@@ -94,7 +94,7 @@ const dev = {
     process.env.NODE_ENV = 'development'
 
     require('../commands/dev') ({
-      layout: argv.layout,
+      layout: argv.project,
       test: argv.test,
       port: argv.port
     })
