@@ -72,15 +72,15 @@ campaigns
    │   │   │   └─── layouts
    │   │          └─── index.mjml
    │   └─── my-template-2
-   │   │       └─── src
-   │   │           └─── attachments
-   │   │           │   └─── img.jpg
-   │   │           └─── data
-   │   │           │   └─── data.json
-   │   │           └─── includes
-   │   │               └─── partial.mjml
-   │   │           └─── layouts
-   │   │               └─── index.mjml
+   │   │   └─── src
+   │   │       └─── attachments
+   │   │       │   └─── img.jpg
+   │   │       └─── data
+   │   │       │   └─── data.json
+   │   │       └─── includes
+   │   │           └─── partial.mjml
+   │   │       └─── layouts
+   │   │           └─── index.mjml
    │   └─── my-template-[...]
    └─── my-email
        └─── src
