@@ -7,7 +7,7 @@ This project is still a work in progress and builds on the amazing work of [Fynn
 
 ## Installation
 
-1. Install [Node.js v10+](https://nodejs.org)
+1. Install [Node.js](https://nodejs.org)
 2. Install Mail Box CLI:
 
 ```bash
