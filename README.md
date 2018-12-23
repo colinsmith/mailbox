@@ -57,33 +57,46 @@ Building templates can be done with the `build` command:
 
 Ideally, a working directory should look something like this:
 
-+-- campaigns
-|   +-- templates
-|       +-- my-template     
-|           +-- src
-|               +-- attachments
-|                   +-- img.jpg
-|               +-- data
-|                   +-- data.json
-|               +-- includes
-|                   +-- partial.mjml
-|               +-- layouts
-|                   +-- index.mjml
-|   +-- my-email
-|       +-- src
-|           +-- attachments
-|               +-- img.jpg
-|           +-- data
-|               +-- data.json
-|           +-- includes
-|               +-- partial.mjml
-|           +-- layouts
-|               +-- index.mjml
-|       +-- dist
-|           +-- attachments
-|               +-- img.jpg
-|           +-- index.html
-
+```
+campaigns
+   │
+   └─── templates
+   │   └─── my-template-1
+   │   │   └─── src
+   │   │   │   └─── attachments
+   │   │   │   │   └─── img.jpg
+   │   │   │   └─── data
+   │   │   │   │   └─── data.json
+   │   │   │   └─── includes
+   │   │   │   │   └─── partial.mjml
+   │   │   │   └─── layouts
+   │   │          └─── index.mjml
+   │   └─── my-template-2
+   │   │       └─── src
+   │   │           └─── attachments
+   │   │           │   └─── img.jpg
+   │   │           └─── data
+   │   │           │   └─── data.json
+   │   │           └─── includes
+   │   │               └─── partial.mjml
+   │   │           └─── layouts
+   │   │               └─── index.mjml
+   │   └─── my-template-[...]
+   └─── my-email
+       └─── src
+       │   └─── attachments
+       │   │   └─── img.jpg
+       │   └─── data
+       │   │   └─── data.json
+       │   └─── includes
+       │   │   └─── partial.mjml
+       │   └─── layouts
+       │       └─── index.mjml
+       └─── dist
+           └─── attachments
+           │   └─── img.jpg
+           └─── index.html
+```
 
 ## Todo list
 
