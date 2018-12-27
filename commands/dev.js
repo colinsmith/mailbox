@@ -46,13 +46,6 @@ async function dev (options) {
 
     const socketScript = generateWebSocketScript({ port: socketPort })
 
-    console.log(getTemplatePath({
-        layout: options.layout,
-        location: 'local',
-        subfolder: 'attachments',
-        returnDir: 'src'
-      }));
-
     server.use('/attachments', express.static(
       getTemplatePath({
         layout: options.layout,
