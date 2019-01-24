@@ -10,6 +10,7 @@ const injectScript = require('../lib/inject-script')
 const renderEmail = require('../lib/render-email')
 const path = require('path')
 const WebSocket = require('ws')
+const yaml = require('js-yaml')
 
 /**
  * Start dev server with hot reload
@@ -70,7 +71,7 @@ async function dev (options) {
           location: 'local',
           subfolder: 'data',
           returnDir: 'src',
-          file: options.test + '.json'
+          file: options.test + '.yml'
         })
       });
 
@@ -94,7 +95,7 @@ async function dev (options) {
           location: 'local',
           subfolder: 'data',
           returnDir: 'src',
-          file: '/**/*.json'})
+          file: '/**/*.yml'})
       ], { ignoreInitial: true })
       .on('all', () => {
         socket.clients.forEach(client => {

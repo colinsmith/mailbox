@@ -54,7 +54,7 @@ function build (options) {
         location: 'local',
         subfolder: 'data',
         returnDir: 'src',
-        file: options.test + '.json'
+        file: options.test + '.yml'
       })
     });
 
